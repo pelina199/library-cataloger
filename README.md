@@ -1,2 +1,2 @@
 # library-cataloger
- a text-based book storage and search application in python
+ a text-based book storage and search application with Python pandas
