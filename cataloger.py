@@ -1,14 +1,12 @@
 import pandas as pd
+import os.path
 
-
-print("LIBRARY CATALOGER")
-actions = ['New entry', 'Display the catalog', 'Search the catalog', 'Delete entry']
 running = True
 
 
 def choose_action():
     global running
-    print('\n-----------------------------------------------------------------------------------------------')
+    print('\n-----------------------------------------------------------------------')
     i = 1
     for item in actions:
         print(str(i) + '.', item)
@@ -50,9 +48,20 @@ def capital(phrase):
     return ' '.join(word.capitalize() for word in phrase.split())
 
 
+print("LIBRARY CATALOGER")
+actions = ['New entry', 'Display the catalog', 'Search the catalog', 'Delete entry']
+fields = ['Title', 'Author', 'Genre', 'Publisher', 'Year', 'Language']
+# file name to store the data into
+file = 'Collection.csv'
+
 while running:
 
-    df1 = pd.read_csv('Collection.csv')
+    if os.path.isfile(file):
+        df1 = pd.read_csv(file)
+    else:
+        df1 = pd.DataFrame(columns=fields)
+        df1.to_csv(file, index=False, mode='a', header=fields)
+        
     choice = choose_action()
 
     # Add entry
@@ -64,11 +73,13 @@ while running:
         genre = capital(input("Genre: "))
         publisher = capital(input("Publisher: "))
         year = input("   Publishing year: ")
+        lang = capital(input("Language: "))
 
-        new_entry = {'Title': [title], 'Author': [author], 'Genre': [genre], 'Publisher': [publisher], 'Year': [year]}
+        new_entry = {'Title': [title], 'Author': [author], 'Genre': [genre], 
+                     'Publisher': [publisher], 'Year': [year], 'Language': [lang]}
 
         entry_df = pd.DataFrame(new_entry)
-        entry_df.to_csv('Collection.csv', index=False, mode='a', header=False)
+        entry_df.to_csv(file, index=False, mode='a', header=False)
         print('\n' + title + ' by ' + author + ' has been added to the catalog.')
 
     # Display all the entries
@@ -78,7 +89,7 @@ while running:
     # Find entries
     elif choice == 2:
         print('\n   Fill in search fields:')
-        search_values = {'Title': '', 'Author': '', 'Genre': '', 'Publisher': '', 'Year': ''}
+        search_values = {'Title': '', 'Author': '', 'Genre': '', 'Publisher': '', 'Year': '', 'Language': ''}
         fields = 0
         for label in search_values:
             search_values[label] = capital(input(label + ': '))
@@ -107,7 +118,7 @@ while running:
         print('\n', sorted_df.to_string())
         deleted_df = delete_entry(sorted_df)
         if deleted_df is not None:
-            deleted_df.to_csv('Collection.csv', index=False)
+            deleted_df.to_csv(file, index=False)
         else:
             continue
 
